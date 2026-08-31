@@ -48,8 +48,8 @@ Requires Python 3.x and a few libraries.
 
 The software accepts data in `.csv` or `.xlsx` (Excel) formats. 
 - **Gas Ratios:** Files should contain at least three columns: `Time`, `Gas 1`, and `Gas 2`. Column headers must match standard gas names (e.g., `CO2`, `SO2`, `H2S`, `H2O`) without special characters.
-- **GPS Coordinates:** Files should include `Time`, `Longitude`, and `Latitude` columns for proper spatial synchronization.
-
+- **GPS Coordinates (optional, for Map Generation only):** `Time`, `Longitude`, 
+  and `Latitude` columns, required only when generating spatial gas ratio maps.
 ---
 
 ## Documentation
