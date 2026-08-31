@@ -10,8 +10,6 @@ from sklearn.metrics import r2_score
 from PIL import Image, ImageTk
 import os
 import sys
-import geopandas as gpd
-from shapely.geometry import Point
 from scipy.interpolate import griddata
 import matplotlib.colors as mcolors
 from matplotlib.backends.backend_pdf import PdfPages
@@ -26,32 +24,19 @@ from pykrige.ok import OrdinaryKriging
 from matplotlib.backend_bases import NavigationToolbar2
 from scipy.interpolate import interp1d, PchipInterpolator
 import xml.etree.ElementTree as ET
-import serial
-import serial.tools.list_ports
-from joblib import dump
 import datetime
-import threading
 import threading
 import datetime
 import json
-import serial.tools.list_ports
-import pandas as pd
 from sklearn.linear_model import LinearRegression
-from joblib import dump
 from PIL import Image, ImageTk
 from tkinter import ttk, messagebox, simpledialog
-import serial.tools.list_ports
-from PIL import Image, ImageTk
-import datetime
-import serial
 import matplotlib
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 from tkinter import scrolledtext
 import webbrowser
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import json
 import datetime
 from scipy.signal import find_peaks
 from scipy.signal import savgol_filter
@@ -351,7 +336,7 @@ def onselect(xmin, xmax):
     
     # Determine upper boundary limits dynamically to prevent out-of-bounds indexing exceptions
     try:
-        max_limit = len(df) # نام متغیر دیتافریم یا لیست داده‌هایت را اینجا چک کن
+        max_limit = len(df) # Check the DataFrame/list variable name used here
     except NameError:
         max_limit = int(xmax)
 
@@ -1079,7 +1064,7 @@ def run_analysis(gas1_name, gas2_name):
             try:
                 import os
                 # Extract file base name from root global path reference built during initialization
-                base_name = os.path.basename(file_path)
+                base_name = os.path.basename(current_file_path)
                 file_name_no_ext = os.path.splitext(base_name)[0]
                 # Format automatic suggested export file identifier using base name and gas pairs
                 suggested_name = f"Results_{file_name_no_ext}_{y_label}_{x_label}.txt"
