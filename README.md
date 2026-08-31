@@ -21,13 +21,26 @@ Developed at the **Institute of Geophysics, National Autonomous University of Me
 
 ## Installation & Quick Start
 
-VGR Processor is compiled as a standalone application for Windows, requiring **no prior Python installation** or external library setups.
+VGR Processor is available in two forms from the [Releases](https://github.com/alifhh/VGR-Processor/releases) 
+section of this repository:
 
-1. Go to the [Releases](https://github.com/alifhh/VGR-Processor/releases) section of this repository.
-2. Download the latest `VGR_Processor.zip` package.
-3. Extract the ZIP file into a local folder on your computer.
-4. Run the executable file: `VGRP.exe`
-   *(Note: The first launch may take a few minutes to initialize the isolated virtual environment).*
+### Option A — Standalone Executable (Windows)
+No Python installation or library setup required.
+1. Download `VGRP.exe` from the Releases page.
+2. Run it directly.
+   *(Note: The first launch may take a few minutes to initialize.)*
+
+### Option B — Run from Source Code (cross-platform)
+Requires Python 3.x and a few libraries.
+1. Download `VGR_Processor_source.zip` from the Releases page and extract it.
+2. Install the required dependencies:
+```bash
+   pip install -r requirements.txt
+```
+3. Run the software:
+```bash
+   python VGRP.py
+```
 
 ---
 
