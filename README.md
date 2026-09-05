@@ -2,7 +2,7 @@
 
 **VGR Processor** is a standalone, zero-dependency Python-based software designed for processing raw multicomponent volcanic gas analyzer (Multi-Gas) data. It provides an intuitive graphical user interface (GUI) to handle complex signal processing workflows, instrument calibrations, and high-resolution geochemical map generation for active fumarolic fields.
 
-Developed at the **Institute of Geophysics, National Autonomous University of Mexico (UNAM)*.
+Developed at the **Institute of Geophysics, National Autonomous University of Mexico (UNAM).
 
 ---
 
