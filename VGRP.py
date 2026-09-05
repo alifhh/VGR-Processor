@@ -389,6 +389,24 @@ class GasSmoother:
              continue
 
      return best_smoothed, best_t90, best_corr
+    def best_moving_average_filter(self, data, compare_gas, min_window=3, max_window=40, step=2):
+        best_corr = -1
+        best_window = None
+        best_result = data.copy()
+        for w in range(min_window, max_window + 1, step):
+            series = pd.Series(data)
+            smoothed = series.rolling(window=w, center=True, min_periods=1).mean()
+            smoothed = smoothed.ffill().bfill().to_numpy()
+            min_len = min(len(smoothed), len(compare_gas))
+            try:
+                corr = np.corrcoef(smoothed[:min_len], compare_gas[:min_len])[0, 1]
+            except Exception:
+                continue
+            if not np.isnan(corr) and corr > best_corr:
+                best_corr = corr
+                best_window = w
+                best_result = smoothed
+        return best_result, best_window, best_corr
 
     def apply_selected_filter(self, data, compare_gas=None, selected_range=None, gas_name="this gas"):
         # Inject standard Central Moving Average to the interactive filter selection matrix
@@ -454,32 +472,18 @@ class GasSmoother:
 
         # 3. Moving Average 
         if filter_choice == 4:
-            
-            window_ma = simpledialog.askinteger("Moving Average", "Enter window size:", initialvalue=21, minvalue=2)
-            
-            if window_ma:
+            if compare_gas is not None:
                 try:
-                    # Wrap the target numerical array into a Pandas Series object
-                    series = pd.Series(final_data)
-                    
-                    # Compute a center-aligned moving average, matching spreadsheet engine specifications
-                    ma_smoothed = series.rolling(window=window_ma,center=True, min_periods=1).mean()
-                    
-                    # Backfill and forward-fill remaining NaN edge values to prevent edge propagation
-                    ma_smoothed = ma_smoothed.ffill().bfill()
-                    
-                    # Update the analytical array with the finalized smoothed series
-                    final_data = ma_smoothed.to_numpy()
-                    
-                    messagebox.showinfo("Success", f"Moving Average (window={window_ma}) applied.")
-                    
-                    # Critical compliance fix: Return the 3-element tuple expected by the calibration routine
+                    ma_smoothed, window_ma, best_corr = self.best_moving_average_filter(final_data, compare_gas)
+                    final_data = ma_smoothed
+                    messagebox.showinfo("Success", f"Best Moving Average window found: {window_ma}\nCorrelation: {best_corr:.3f}")
                     return final_data, start, end
-
                 except Exception as e:
                     messagebox.showerror("Error", f"MA processing failed: {str(e)}")
-                    # Exception handling: Return a copy of the raw segment to prevent core application crashes
                     return data.copy(), start, end
+            else:
+                messagebox.showwarning("Warning", "Comparison gas not available for automatic Moving Average.")
+                return data.copy(), start, end
 
         return final_data, start, end
 
@@ -876,8 +880,8 @@ def run_analysis(gas1_name, gas2_name):
 
         # 2. Apply exponential smoothing using newly processed x and y datasets
         smoother = GasSmoother()
-        x_smoothed, start, end = smoother.apply_selected_filter(x, compare_gas=y, selected_range=selected_range, gas_name=gas1_name)
-        y_smoothed, start, end = smoother.apply_selected_filter(y, compare_gas=x, selected_range=selected_range, gas_name=gas2_name)
+        x_smoothed, start, end = smoother.apply_selected_filter(x, compare_gas=y, selected_range=[0, len(x)], gas_name=gas1_name)
+        y_smoothed, start, end = smoother.apply_selected_filter(y, compare_gas=x, selected_range=[0, len(y)], gas_name=gas2_name)
         
         # --- Step 2: Display Smoothing Results ---
         plt.figure(figsize=(14, 10))
@@ -1087,8 +1091,8 @@ def run_analysis(gas1_name, gas2_name):
         # Cache Active Analytical Slice to Global Variables for Cartography
         global processed_data, processed_data_start_index, processed_data_end_index
         processed_data = pd.DataFrame({'x': indep_var, 'y': dep_var}) 
-        processed_data_start_index = start
-        processed_data_end_index = end
+        processed_data_start_index = start_row
+        processed_data_end_index = start_row + len(indep_var)
         
         # Evaluate total record count within currently processed timestamp range
         num_processed = end - start + 1
@@ -1253,12 +1257,13 @@ def generate_map():
 
         # --- Align Geospatial Tracking Coordinate Arrays with Target Metrics Bound ---
         expected_length = len(processed_data)
-        if len(coordinates_data) < expected_length:
+        if len(coordinates_data) < end_index:
             messagebox.showerror("Error", f"Coordinates file too short. Expected {expected_length}, got {len(coordinates_data)}.")
             return
 
-        processed_data['Latitude'] = coordinates_data['Latitude'].iloc[:expected_length].values
-        processed_data['Longitude'] = coordinates_data['Longitude'].iloc[:expected_length].values
+
+        processed_data['Latitude'] = coordinates_data['Latitude'].iloc[start_index:end_index].values
+        processed_data['Longitude'] = coordinates_data['Longitude'].iloc[start_index:end_index].values
         data = processed_data.dropna(subset=['x', 'y', 'Latitude', 'Longitude']).copy()
 
     except Exception as e:
