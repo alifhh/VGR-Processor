@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Zare"
+    given-names: "Ali"
+    orcid: "https://orcid.org/YOUR_ORCID"
+  - family-names: "Campion"
+    given-names: "Robin"
+  - family-names: "Bahmani"
+    given-names: "Abolfazl"
+  - family-names: "Paulín Zavala"
+    given-names: "Tania"
+title: "VGR Processor: A Python-Based Software for Calculating Gas Ratios from Multicomponent Volcanic Gas Analyzers"
+version: "1.0.0"
+date-released: 2026-09-01
+url: "https://github.com/alifhh/VGR-Processor"
