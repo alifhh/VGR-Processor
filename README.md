@@ -65,4 +65,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Citation
 
 If you use VGR Processor in your research or monitoring campaigns, please cite our corresponding paper:
-> *Zare, A., Campion, R., Bahmani, A., Paulín Zavala, T. (2026). VGR Processor: A Python-Based Software for Calculating Gas Ratios from Multicomponent Volcanic Gas Analyzers. Computers & Geosciences.*
+> *Zare, A., Campion, R., Bahmani, A., Paulín Zavala, T. (2026). VGR Processor: A Python-Based Software for Calculating Gas Ratios from Multicomponent Volcanic Gas Analyzers. Manuscript under review.*
