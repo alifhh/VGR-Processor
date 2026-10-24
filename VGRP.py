@@ -42,6 +42,17 @@ from scipy.signal import find_peaks
 from scipy.signal import savgol_filter
 from scipy.signal import filtfilt
 
+
+def app_dir():
+    """Folder next to VGRP.exe (PyInstaller) or next to VGRP.py (source)."""
+    if getattr(sys, 'frozen', False):
+        return os.path.dirname(os.path.abspath(sys.executable))
+    return os.path.dirname(os.path.abspath(__file__))
+
+MODELS_DIR = os.path.join(app_dir(), "models")
+CALIB_RESULTS_DIR = os.path.join(app_dir(), "calibration_results")
+CALIB_FILE = os.path.join(MODELS_DIR, "calibration_coeffs.json")
+
 class VGR_CalibrationToolbox:
     def __init__(self, root):
         self.root = root
@@ -54,8 +65,8 @@ class VGR_CalibrationToolbox:
         self.results = {} # Dictionary to temporarily cache calculated calibration coefficients
         
         # Ensure required directories for models and results exist
-        os.makedirs("models", exist_ok=True)
-        os.makedirs("calibration_results", exist_ok=True)
+        os.makedirs(MODELS_DIR, exist_ok=True)
+        os.makedirs(CALIB_RESULTS_DIR, exist_ok=True)
         
         self.setup_ui()
 
@@ -299,10 +310,9 @@ class VGR_CalibrationToolbox:
         """Archive calculated calibration coefficients to JSON and CSV formats 
         while mitigating NumPy-to-Python type conversion errors (TypeError)."""
         try:
-            os.makedirs("models", exist_ok=True)
-            os.makedirs("calibration_results", exist_ok=True)
-            json_path = "models/calibration_coeffs.json"
-            
+            os.makedirs(MODELS_DIR, exist_ok=True)
+            os.makedirs(CALIB_RESULTS_DIR, exist_ok=True)
+            json_path = CALIB_FILE
             # Ingest existing structural database or initialize a clean memory map
             archive = {}
             if os.path.exists(json_path):
@@ -322,7 +332,7 @@ class VGR_CalibrationToolbox:
                 json.dump(archive, f, indent=4)
 
             if clean_entries:
-                path = f"calibration_results/report_{datetime.datetime.now().strftime('%Y%m%d_%H%M')}.csv"
+                path = os.path.join(CALIB_RESULTS_DIR, f"report_{datetime.datetime.now().strftime('%Y%m%d_%H%M')}.csv")
                 pd.DataFrame(clean_entries).to_csv(path, index=False)
                 messagebox.showinfo("Success", f"Saved to {path}")
         except Exception as e:
@@ -556,7 +566,7 @@ def apply_calibration_smart(gas_name, gas_data, all_data_df=None):
         return apply_cconversion(gas_name, gas_data)
 
     # 1. Load archive
-    calib_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models", "calibration_coeffs.json")
+    calib_file = CALIB_FILE
     
     # If file does not exist, redirect to manual calibration instead of exiting
     if not os.path.exists(calib_file):
